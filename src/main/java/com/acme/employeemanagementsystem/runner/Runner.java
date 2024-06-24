@@ -8,11 +8,14 @@ import com.acme.employeemanagementsystem.repository.EmployeeRepository;
 import com.acme.employeemanagementsystem.repository.EmployeeRepositoryImpl;
 import com.acme.employeemanagementsystem.service.EmployeeService;
 import com.acme.employeemanagementsystem.service.EmployeeServiceImpl;
+import com.acme.employeemanagementsystem.service.FakerService;
+import com.acme.employeemanagementsystem.service.FakerSingleton;
 import com.acme.employeemanagementsystem.service.OutsourcedEmployeeServiceImpl;
 import com.acme.employeemanagementsystem.service.PayRiseService;
 import com.acme.employeemanagementsystem.service.PayRiseServiceImpl;
 import com.acme.employeemanagementsystem.service.RandomEmployeeDataServiceImpl;
 import com.acme.employeemanagementsystem.service.RandomOutsourcedEmployeeDataServiceImpl;
+import com.acme.employeemanagementsystem.service.RandomService;
 import com.acme.employeemanagementsystem.service.RandomSingleton;
 import lombok.extern.slf4j.Slf4j;
 
@@ -29,7 +32,7 @@ public class Runner {
 
     private static EmployeeService<OutsourcedEmployee> outsourcedEmployeeService;
     private static PayRiseService payRiseService;
-
+    private static RandomService randomService;
 
     private static final List<Employee> employees = new ArrayList<>();
     private static final List<OutsourcedEmployee> outsourcedEmployees = new ArrayList<>();
@@ -59,7 +62,7 @@ public class Runner {
         for (Employee employee : employees) {
             payRiseService.increaseSalary(
                 employee,
-                RandomSingleton.getInstance().getBigDecimal(MIN_SALARY_INCREASE, MAX_SALARY_INCREASE));
+                randomService.getBigDecimal(MIN_SALARY_INCREASE, MAX_SALARY_INCREASE));
             employeeService.save(employee);
         }
     }
@@ -70,7 +73,7 @@ public class Runner {
             try {
                 payRiseService.increaseSalary(
                     employee,
-                    RandomSingleton.getInstance().getBigDecimal(MIN_SALARY_INCREASE, MAX_SALARY_INCREASE));
+                    randomService.getBigDecimal(MIN_SALARY_INCREASE, MAX_SALARY_INCREASE));
                 employeeService.save(employee);
             } catch (InvalidSalaryIncreaseToOutsourcedEmployeeException e) {
                 log.error(e.getMessage());
@@ -79,22 +82,25 @@ public class Runner {
     }
 
     private static void populateEmployees() {
-        for(int i = 0; i < RandomSingleton.getInstance().getInt(1, 100); i++){
+        for(int i = 0; i < randomService.getInt(1, 100); i++){
             employees.add(employeeService.generateRandomEmployee());
         }
     }
 
     private static void populateOutsourcedEmployees() {
-        for(int i = 0; i < RandomSingleton.getInstance().getInt(1, 100); i++){
+        for(int i = 0; i < randomService.getInt(1, 100); i++){
             outsourcedEmployees.add(outsourcedEmployeeService.generateRandomEmployee());
         }
     }
 
     private static void instantiateAllServices() {
-        EmployeeRepository employeeRepository = new EmployeeRepositoryImpl();
-        employeeService = new EmployeeServiceImpl(employeeRepository, new RandomEmployeeDataServiceImpl());
-        outsourcedEmployeeService = new OutsourcedEmployeeServiceImpl(employeeRepository, new RandomOutsourcedEmployeeDataServiceImpl());
         payRiseService = new PayRiseServiceImpl();
+        randomService = RandomSingleton.getInstance();
+        FakerService fakerService = FakerSingleton.getInstance();
+
+        EmployeeRepository employeeRepository = new EmployeeRepositoryImpl();
+        employeeService = new EmployeeServiceImpl(employeeRepository, new RandomEmployeeDataServiceImpl(randomService, fakerService));
+        outsourcedEmployeeService = new OutsourcedEmployeeServiceImpl(employeeRepository, new RandomOutsourcedEmployeeDataServiceImpl(randomService, fakerService));
     }
 
 }

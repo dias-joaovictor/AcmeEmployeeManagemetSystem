@@ -4,7 +4,7 @@ package com.acme.employeemanagementsystem.service;
 import java.math.BigDecimal;
 import java.util.Random;
 
-public final class RandomSingleton {
+public final class RandomSingleton implements RandomService {
 
     private static RandomSingleton instance;
 
@@ -21,10 +21,12 @@ public final class RandomSingleton {
         return instance;
     }
 
+    @Override
     public int getInt(int startInclusive, int endExclusive) {
         return random.nextInt(startInclusive, endExclusive);
     }
 
+    @Override
     public BigDecimal getBigDecimal(double startInclusive, double endExclusive){
         return BigDecimal.valueOf(random.nextDouble(startInclusive, endExclusive));
     }

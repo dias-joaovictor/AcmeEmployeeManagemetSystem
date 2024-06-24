@@ -4,7 +4,7 @@ import com.github.javafaker.Faker;
 import lombok.Getter;
 
 @Getter
-public final class FakerSingleton {
+public final class FakerSingleton implements FakerService {
 
     private static FakerSingleton instance;
 

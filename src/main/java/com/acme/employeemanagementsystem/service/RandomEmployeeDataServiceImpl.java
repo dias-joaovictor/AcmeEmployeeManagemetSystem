@@ -6,12 +6,19 @@ import com.acme.employeemanagementsystem.model.Level;
 import com.acme.employeemanagementsystem.model.PhoneNumber;
 import com.acme.employeemanagementsystem.model.PhoneType;
 import com.github.javafaker.Faker;
+import lombok.RequiredArgsConstructor;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+@RequiredArgsConstructor
 public class RandomEmployeeDataServiceImpl implements RandomEmployeeDataService {
+
+    protected final RandomService randomService;
+
+    protected final FakerService fakerService;
+
 
     @Override
     public String getName() {
@@ -20,11 +27,11 @@ public class RandomEmployeeDataServiceImpl implements RandomEmployeeDataService 
 
     @Override
     public List<PhoneNumber> getPhoneNumbers() {
-        var amountOfNumbers = RandomSingleton.getInstance().getInt(1, 5);
+        var amountOfNumbers = randomService.getInt(1, 5);
 
         List<PhoneNumber> phoneNumbers = new ArrayList<>(amountOfNumbers);
         for(int i = 0; i < amountOfNumbers; i++){
-            var numberType = RandomSingleton.getInstance().getInt(1, 3);
+            var numberType = randomService.getInt(1, 3);
             phoneNumbers.add(PhoneNumber.builder()
                     .number(this.getFaker().phoneNumber().phoneNumber())
                     .phoneType(numberType == 1 ? PhoneType.LANDLINE : PhoneType.MOBILE)
@@ -46,12 +53,12 @@ public class RandomEmployeeDataServiceImpl implements RandomEmployeeDataService 
 
     @Override
     public BigDecimal getSalary() {
-        return RandomSingleton.getInstance().getBigDecimal(1000, 25000);
+        return randomService.getBigDecimal(1000, 25000);
     }
 
     @Override
     public Department getDepartment() {
-        var numberType = RandomSingleton.getInstance().getInt(1, 4);
+        var numberType = randomService.getInt(1, 4);
 
         return switch (numberType) {
             case 1 -> Department.DEVELOPMENT;
@@ -62,7 +69,7 @@ public class RandomEmployeeDataServiceImpl implements RandomEmployeeDataService 
 
     @Override
     public Level getLevel() {
-        var numberType = RandomSingleton.getInstance().getInt(1, 5);
+        var numberType = randomService.getInt(1, 5);
 
         return switch (numberType) {
             case 1 -> Level.INTERN;
@@ -73,7 +80,7 @@ public class RandomEmployeeDataServiceImpl implements RandomEmployeeDataService 
     }
 
     protected Faker getFaker() {
-        return FakerSingleton.getInstance().getFaker();
+        return fakerService.getFaker();
     }
 
 }

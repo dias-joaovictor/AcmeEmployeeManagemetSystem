@@ -1,17 +1,15 @@
 package com.acme.employeemanagementsystem.service;
 
-import com.acme.employeemanagementsystem.model.Address;
-import com.acme.employeemanagementsystem.model.Department;
-import com.acme.employeemanagementsystem.model.Level;
 import com.acme.employeemanagementsystem.model.OutsourcingCompany;
-import com.acme.employeemanagementsystem.model.PhoneNumber;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Random;
 
 public class RandomOutsourcedEmployeeDataServiceImpl extends RandomEmployeeDataServiceImpl implements RandomOutsourcedEmployeeDataService {
+
+    public RandomOutsourcedEmployeeDataServiceImpl(RandomService randomService, FakerService fakerService) {
+        super(randomService, fakerService);
+    }
+
     @Override
     public OutsourcingCompany getOutsourcingCompany() {
         return OutsourcingCompany.builder()
@@ -23,6 +21,6 @@ public class RandomOutsourcedEmployeeDataServiceImpl extends RandomEmployeeDataS
 
     @Override
     public LocalDate getEndOfContract() {
-        return LocalDate.now().plusMonths(RandomSingleton.getInstance().getInt(1, 11));
+        return LocalDate.now().plusMonths(randomService.getInt(1, 11));
     }
 }
